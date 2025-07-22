@@ -67,14 +67,20 @@ app.use((req, res, next) => {
   const isReplit = process.env.REPLIT_SLUG || process.env.REPL_SLUG;
   const networkAccess = process.env.NETWORK_ACCESS === 'true';
   
-  if (isReplit || isProduction || networkAccess) {
-    // Configuration Replit/Production/Network - écoute sur toutes les interfaces
+  if (isReplit || isProduction) {
+    // Configuration Replit/Production - écoute sur toutes les interfaces
     server.listen({
       port,
       host: "0.0.0.0",
       reusePort: true,
     }, () => {
       log(`serving on port ${port}`);
+    });
+  } else if (networkAccess) {
+    // Configuration développement réseau Windows - sans reusePort
+    server.listen(port, "0.0.0.0", () => {
+      log(`serving on port ${port}`);
+      log(`Network access: http://0.0.0.0:${port}`);
     });
   } else {
     // Configuration développement local Windows - écoute seulement sur localhost
