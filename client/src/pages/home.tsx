@@ -6,9 +6,31 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Beer, Plus, Minus, Trash2, Wifi, AlertTriangle } from "lucide-react";
+import { Beer, Plus, Minus, Trash2, AlertTriangle, BarChart3 } from "lucide-react";
 import ConfirmationDialog from "@/components/ui/confirmation-dialog";
 import type { BeerType } from "@shared/schema";
+
+// Helper function to get beer color class
+const getBeerColorClass = (name: string) => {
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes('blonde') || lowerName.includes('blond')) return 'beer-blonde';
+  if (lowerName.includes('amber') || lowerName.includes('ambrée')) return 'beer-amber';
+  if (lowerName.includes('ipa')) return 'beer-ipa';
+  if (lowerName.includes('triple')) return 'beer-triple';
+  if (lowerName.includes('white') || lowerName.includes('blanche')) return 'beer-white';
+  if (lowerName.includes('brown') || lowerName.includes('brune')) return 'beer-brown';
+  if (lowerName.includes('citrus') || lowerName.includes('citron')) return 'beer-citrus';
+  if (lowerName.includes('spring') || lowerName.includes('printemps')) return 'beer-spring';
+  return 'beer-default';
+};
+
+// Helper function to get keg count color class
+const getKegCountClass = (count: number) => {
+  if (count === 0) return 'keg-count-zero';
+  if (count <= 20) return 'keg-count-low';
+  if (count <= 50) return 'keg-count-medium';
+  return 'keg-count-high';
+};
 
 export default function Home() {
   const { toast } = useToast();
@@ -165,188 +187,192 @@ export default function Home() {
   const wellStockedTypes = beerTypes.filter(beer => beer.kegCount > 20);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-card border-b border-border sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <Beer className="text-blue-600 h-8 w-8" />
-              <h1 className="text-2xl font-bold text-gray-900">Keg Inventory Manager</h1>
+          <div className="flex flex-col items-center py-8">
+            <div className="flex items-center space-x-4 mb-2">
+              <Beer className="text-primary h-10 w-10" />
+              <h1 className="text-3xl font-bold text-foreground">Inventaire Fûts Chambre Froide</h1>
             </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-500">
-              <Wifi className="h-4 w-4 text-green-500" />
-              <span>Connected to Local Network</span>
-            </div>
+            <p className="text-muted-foreground text-center">
+              Système de gestion des stocks de bière en temps réel
+            </p>
           </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Action Bar */}
+        {/* Management Section */}
         <div className="mb-8">
-          <Card className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-            <div className="space-y-3">
-              <h3 className="text-sm font-medium text-gray-700">Add New Beer Type</h3>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                <Input
-                  placeholder="Enter beer type name"
-                  value={newBeerName}
-                  onChange={(e) => setNewBeerName(e.target.value)}
-                  className="flex-1"
-                />
-                <Input
-                  type="number"
-                  placeholder="Initial keg count"
-                  value={newBeerCount}
-                  onChange={(e) => setNewBeerCount(e.target.value)}
-                  min="0"
-                  className="w-full sm:w-32"
-                />
-                <Button
-                  onClick={handleAddBeerType}
-                  disabled={createBeerTypeMutation.isPending}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Type
-                </Button>
-              </div>
-            </div>
-          </Card>
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+            <h2 className="text-xl font-semibold text-foreground">Gestion des types de bières</h2>
+          </div>
+          <p className="text-muted-foreground mb-6">
+            Ajoutez de nouveaux types de bière ou supprimez ceux existants à l'aide du{" "}
+            <Trash2 className="inline h-4 w-4 text-red-400" /> bouton sur chaque type de bière
+          </p>
+          
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 items-end">
+            <Input
+              placeholder="Saisir le nom de la bière ..."
+              value={newBeerName}
+              onChange={(e) => setNewBeerName(e.target.value)}
+              className="flex-1 bg-input border-border text-foreground placeholder:text-muted-foreground"
+            />
+            <Input
+              type="number"
+              placeholder="Fûts"
+              value={newBeerCount}
+              onChange={(e) => setNewBeerCount(e.target.value)}
+              min="0"
+              className="w-full sm:w-24 bg-input border-border text-foreground placeholder:text-muted-foreground"
+            />
+            <Button
+              onClick={handleAddBeerType}
+              disabled={createBeerTypeMutation.isPending}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
-        {/* Inventory Grid */}
+        {/* Beer Inventory Grid */}
         <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-900">Current Inventory</h2>
-          </div>
-
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, i) => (
-                <Card key={i} className="p-6 animate-pulse">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-                  <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, i) => (
+                <Card key={i} className="p-6 animate-pulse bg-card border-border">
+                  <div className="h-4 bg-muted rounded w-3/4 mb-4"></div>
+                  <div className="h-8 bg-muted rounded w-1/2 mb-2"></div>
+                  <div className="h-4 bg-muted rounded w-1/3"></div>
                 </Card>
               ))}
             </div>
           ) : beerTypes.length === 0 ? (
-            <Card className="p-12 text-center">
-              <Beer className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Beer Types Yet</h3>
-              <p className="text-gray-500">Add your first beer type to get started with inventory management.</p>
+            <Card className="p-12 text-center bg-card border-border">
+              <Beer className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">Aucun type de bière</h3>
+              <p className="text-muted-foreground">Ajoutez votre premier type de bière pour commencer la gestion d'inventaire.</p>
             </Card>
           ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {beerTypes.map((beerType) => (
-                  <Card key={beerType.id} className="p-6 hover:shadow-md transition-shadow duration-200">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-900">{beerType.name}</h3>
-                        <p className="text-3xl font-bold text-blue-600 mt-2">{beerType.kegCount}</p>
-                        <p className="text-sm text-gray-500">kegs in stock</p>
-                      </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {beerTypes.map((beerType) => (
+                <Card 
+                  key={beerType.id} 
+                  className={`p-6 bg-card border-l-4 transition-all duration-200 hover:scale-105 ${getBeerColorClass(beerType.name)}`}
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center space-x-2">
+                      <Beer className="h-5 w-5 text-primary" />
+                      <h3 className="text-lg font-semibold text-foreground">{beerType.name}</h3>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteBeerType(beerType)}
+                      className="text-muted-foreground hover:text-red-400 h-8 w-8 p-0"
+                      disabled={deleteBeerTypeMutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  <div className="text-center mb-6">
+                    <p className={`text-6xl font-bold ${getKegCountClass(beerType.kegCount)}`}>
+                      {beerType.kegCount}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-1">Fûts disponibles</p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
                       <Button
-                        variant="ghost"
+                        onClick={() => handleAdjustKegs(beerType, "remove")}
+                        disabled={removeKegsMutation.isPending}
                         size="sm"
-                        onClick={() => handleDeleteBeerType(beerType)}
-                        className="text-gray-400 hover:text-red-600"
-                        disabled={deleteBeerTypeMutation.isPending}
+                        className="h-10 w-10 p-0 rounded-full bg-red-600/20 hover:bg-red-600/30 border border-red-600/30"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Minus className="h-4 w-4 text-red-400" />
+                      </Button>
+                      
+                      <Input
+                        type="number"
+                        min="1"
+                        placeholder="1"
+                        value={adjustAmounts[beerType.id] || ""}
+                        onChange={(e) =>
+                          setAdjustAmounts(prev => ({
+                            ...prev,
+                            [beerType.id]: e.target.value
+                          }))
+                        }
+                        className="flex-1 text-center bg-input border-border text-foreground"
+                      />
+                      
+                      <Button
+                        onClick={() => handleAdjustKegs(beerType, "add")}
+                        disabled={addKegsMutation.isPending}
+                        size="sm"
+                        className="h-10 w-10 p-0 rounded-full bg-green-600/20 hover:bg-green-600/30 border border-green-600/30"
+                      >
+                        <Plus className="h-4 w-4 text-green-400" />
                       </Button>
                     </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <Label className="text-sm font-medium text-gray-700 w-16">Adjust:</Label>
-                        <Input
-                          type="number"
-                          min="1"
-                          placeholder="Amount"
-                          value={adjustAmounts[beerType.id] || ""}
-                          onChange={(e) =>
-                            setAdjustAmounts(prev => ({
-                              ...prev,
-                              [beerType.id]: e.target.value
-                            }))
-                          }
-                          className="flex-1 text-center"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <Button
-                          onClick={() => handleAdjustKegs(beerType, "add")}
-                          disabled={addKegsMutation.isPending}
-                          className="bg-green-600 hover:bg-green-700 text-white text-sm"
-                        >
-                          <Plus className="h-3 w-3 mr-1" />
-                          Add
-                        </Button>
-                        <Button
-                          onClick={() => handleAdjustKegs(beerType, "remove")}
-                          disabled={removeKegsMutation.isPending}
-                          className="bg-orange-500 hover:bg-orange-600 text-white text-sm"
-                        >
-                          <Minus className="h-3 w-3 mr-1" />
-                          Remove
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-
-                {/* Low Stock Warning Card */}
-                {lowStockTypes.length > 0 && (
-                  <Card className="bg-yellow-50 border-2 border-yellow-200 p-6">
-                    <div className="flex items-start space-x-3">
-                      <AlertTriangle className="text-yellow-600 h-6 w-6 mt-1" />
-                      <div>
-                        <h3 className="text-lg font-semibold text-yellow-800">Low Stock Alert</h3>
-                        <div className="mt-1">
-                          {lowStockTypes.map((beer, index) => (
-                            <p key={beer.id} className="text-yellow-700">
-                              {beer.name} is running low ({beer.kegCount} kegs remaining)
-                              {index < lowStockTypes.length - 1 && <br />}
-                            </p>
-                          ))}
-                        </div>
-                        <p className="text-sm text-yellow-600 mt-2">Consider restocking soon to avoid shortages.</p>
-                      </div>
-                    </div>
-                  </Card>
-                )}
-              </div>
-
-              {/* Inventory Summary */}
-              <Card className="p-6 mt-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Inventory Summary</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-blue-600">{totalKegs}</p>
-                    <p className="text-sm text-gray-500">Total Kegs</p>
+                    
+                    <p className="text-xs text-center text-muted-foreground">
+                      Dernière mis à jour: 1 hour
+                    </p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-gray-700">{totalTypes}</p>
-                    <p className="text-sm text-gray-500">Beer Types</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-green-600">{wellStockedTypes.length}</p>
-                    <p className="text-sm text-gray-500">Well Stocked</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-orange-500">{lowStockTypes.length}</p>
-                    <p className="text-sm text-gray-500">Low Stock</p>
-                  </div>
-                </div>
-              </Card>
-            </>
+                </Card>
+              ))}
+            </div>
           )}
+        </div>
+
+        {/* Summary Section */}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="p-6 bg-card border-border text-center">
+            <div className="flex items-center justify-center space-x-2 mb-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              <h3 className="text-lg font-semibold text-foreground">Inventaire total</h3>
+            </div>
+            <div className="space-y-2">
+              <div>
+                <p className="text-sm text-muted-foreground">Nombre de fûts total</p>
+                <p className="text-3xl font-bold text-cyan-400">{totalKegs}</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-card border-border text-center">
+            <div className="flex items-center justify-center space-x-2 mb-2">
+              <AlertTriangle className="h-5 w-5 text-yellow-500" />
+              <h3 className="text-lg font-semibold text-foreground">Niveau bas de stock</h3>
+            </div>
+            <div className="space-y-2">
+              <div>
+                <p className="text-sm text-muted-foreground">Types en rupture/faible</p>
+                <p className="text-3xl font-bold text-yellow-500">{lowStockTypes.length}</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-card border-border text-center">
+            <div className="flex items-center justify-center space-x-2 mb-2">
+              <Beer className="h-5 w-5 text-primary" />
+              <h3 className="text-lg font-semibold text-foreground">Dernière activité</h3>
+            </div>
+            <div className="space-y-2">
+              <div>
+                <p className="text-sm text-muted-foreground">Dernière mise à jour</p>
+                <p className="text-lg font-semibold text-foreground">1 hour</p>
+              </div>
+            </div>
+          </Card>
         </div>
       </main>
 

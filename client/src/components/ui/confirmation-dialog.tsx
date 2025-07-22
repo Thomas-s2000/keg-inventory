@@ -49,7 +49,7 @@ export default function ConfirmationDialog({
           <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            variant={confirmVariant}
+            className={confirmVariant === "destructive" ? "bg-red-600 hover:bg-red-700" : ""}
             disabled={isLoading}
           >
             {isLoading ? "Processing..." : confirmText}
