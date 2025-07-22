@@ -2,11 +2,14 @@
 
 ## Overview
 
-This is a full-stack beer inventory management system built with React, Express, TypeScript, and PostgreSQL. The application allows users to manage beer types and track keg counts with a modern, responsive UI built using shadcn/ui components.
+This is a full-stack beer inventory management system built with React, Express, TypeScript, and PostgreSQL. The application features a French dark-themed interface optimized for tablet use, allowing users to manage beer types and track keg counts with an intuitive card-based layout.
 
 ## User Preferences
 
-Preferred communication style: Simple, everyday language.
+- Preferred communication style: Simple, everyday language (French)
+- Interface: French language, dark theme, tablet-optimized
+- Design: Minimal, clean interface without unnecessary elements
+- Layout: Card-based beer inventory with compact controls
 
 ## System Architecture
 
