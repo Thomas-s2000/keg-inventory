@@ -100,3 +100,13 @@ This is a full-stack beer inventory management system built with React, Express,
 - `/shared`: Shared TypeScript types and schemas
 - `/migrations`: Database migration files
 - Root-level config files for build tools and TypeScript
+
+## Recent Changes
+
+### January 22, 2025
+- ✅ Added dotenv support for .env file reading on Windows
+- ✅ Created Windows batch scripts (start-dev.bat, create-env.bat) for easy setup
+- ✅ Improved error handling for missing environment variables
+- ✅ Added comprehensive installation guides (README.md, INSTALLATION.md)
+- ✅ Configured cross-env for Windows compatibility
+- ✅ Fixed PostgreSQL permissions and Docker setup instructions
