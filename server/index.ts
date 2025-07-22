@@ -61,11 +61,27 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+  
+  // Configuration différente pour développement local vs production
+  const isProduction = process.env.NODE_ENV === 'production';
+  const isReplit = process.env.REPLIT_SLUG || process.env.REPL_SLUG;
+  const networkAccess = process.env.NETWORK_ACCESS === 'true';
+  
+  if (isReplit || isProduction || networkAccess) {
+    // Configuration Replit/Production/Network - écoute sur toutes les interfaces
+    server.listen({
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    }, () => {
+      log(`serving on port ${port}`);
+    });
+  } else {
+    // Configuration développement local Windows - écoute seulement sur localhost
+    server.listen(port, 'localhost', () => {
+      log(`serving on port ${port}`);
+      log(`Local access: http://localhost:${port}`);
+      log(`Pour accès réseau local, utilisez start-network.bat`);
+    });
+  }
 })();
