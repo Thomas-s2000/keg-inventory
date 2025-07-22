@@ -188,39 +188,16 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card border-b border-border sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center py-8">
-            <div className="flex items-center space-x-4 mb-2">
-              <Beer className="text-primary h-10 w-10" />
-              <h1 className="text-3xl font-bold text-foreground">Inventaire Fûts Chambre Froide</h1>
-            </div>
-            <p className="text-muted-foreground text-center">
-              Système de gestion des stocks de bière en temps réel
-            </p>
-          </div>
-        </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Management Section */}
-        <div className="mb-8">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-            <h2 className="text-xl font-semibold text-foreground">Gestion des types de bières</h2>
-          </div>
-          <p className="text-muted-foreground mb-6">
-            Ajoutez de nouveaux types de bière ou supprimez ceux existants à l'aide du{" "}
-            <Trash2 className="inline h-4 w-4 text-red-400" /> bouton sur chaque type de bière
-          </p>
-          
-          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 items-end">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        {/* Compact Add Beer Section */}
+        <div className="mb-6">
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
             <Input
-              placeholder="Saisir le nom de la bière ..."
+              placeholder="Nom de la bière..."
               value={newBeerName}
               onChange={(e) => setNewBeerName(e.target.value)}
-              className="flex-1 bg-input border-border text-foreground placeholder:text-muted-foreground"
+              className="flex-1 bg-input border-border text-foreground placeholder:text-muted-foreground h-12"
             />
             <Input
               type="number"
@@ -228,14 +205,14 @@ export default function Home() {
               value={newBeerCount}
               onChange={(e) => setNewBeerCount(e.target.value)}
               min="0"
-              className="w-full sm:w-24 bg-input border-border text-foreground placeholder:text-muted-foreground"
+              className="w-full sm:w-24 bg-input border-border text-foreground placeholder:text-muted-foreground h-12"
             />
             <Button
               onClick={handleAddBeerType}
               disabled={createBeerTypeMutation.isPending}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground h-12 px-6"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-5 w-5" />
             </Button>
           </div>
         </div>
@@ -333,43 +310,18 @@ export default function Home() {
           )}
         </div>
 
-        {/* Summary Section */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="p-6 bg-card border-border text-center">
-            <div className="flex items-center justify-center space-x-2 mb-2">
-              <BarChart3 className="h-5 w-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">Inventaire total</h3>
-            </div>
-            <div className="space-y-2">
-              <div>
-                <p className="text-sm text-muted-foreground">Nombre de fûts total</p>
-                <p className="text-3xl font-bold text-cyan-400">{totalKegs}</p>
+        {/* Compact Summary */}
+        <div className="mt-8">
+          <Card className="p-4 bg-card border-border">
+            <div className="flex items-center justify-center space-x-4">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">Total Fûts</p>
+                <p className="text-2xl font-bold text-cyan-400">{totalKegs}</p>
               </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-card border-border text-center">
-            <div className="flex items-center justify-center space-x-2 mb-2">
-              <AlertTriangle className="h-5 w-5 text-yellow-500" />
-              <h3 className="text-lg font-semibold text-foreground">Niveau bas de stock</h3>
-            </div>
-            <div className="space-y-2">
-              <div>
-                <p className="text-sm text-muted-foreground">Types en rupture/faible</p>
-                <p className="text-3xl font-bold text-yellow-500">{lowStockTypes.length}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-card border-border text-center">
-            <div className="flex items-center justify-center space-x-2 mb-2">
-              <Beer className="h-5 w-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">Dernière activité</h3>
-            </div>
-            <div className="space-y-2">
-              <div>
-                <p className="text-sm text-muted-foreground">Dernière mise à jour</p>
-                <p className="text-lg font-semibold text-foreground">1 hour</p>
+              <div className="w-px h-8 bg-border"></div>
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">Types</p>
+                <p className="text-2xl font-bold text-foreground">{totalTypes}</p>
               </div>
             </div>
           </Card>
