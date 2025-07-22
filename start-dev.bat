@@ -10,4 +10,4 @@ if not exist .env (
 )
 echo Configuration trouvee, demarrage du serveur...
 set NODE_ENV=development
-npx cross-env NODE_ENV=development tsx server/index.ts
+npx tsx server/index.ts

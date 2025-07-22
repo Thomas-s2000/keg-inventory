@@ -2,10 +2,24 @@ import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from "ws";
 import * as schema from "@shared/schema";
-import dotenv from 'dotenv';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
-// Charger les variables d'environnement depuis .env
-dotenv.config();
+// Charger les variables d'environnement depuis .env sans dépendance externe
+try {
+  const envPath = join(process.cwd(), '.env');
+  const envFile = readFileSync(envPath, 'utf8');
+  const envVars = envFile.split('\n').filter(line => line.includes('='));
+  
+  envVars.forEach(line => {
+    const [key, value] = line.split('=');
+    if (key && value) {
+      process.env[key.trim()] = value.trim();
+    }
+  });
+} catch (error) {
+  console.warn('Fichier .env non trouvé ou illisible, utilisation des variables d\'environnement système');
+}
 
 neonConfig.webSocketConstructor = ws;
 
