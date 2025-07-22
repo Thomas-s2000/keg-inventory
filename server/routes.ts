@@ -8,11 +8,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all beer types
   app.get("/api/beer-types", async (req, res) => {
     try {
+      console.log("Attempting to fetch beer types...");
       const beerTypes = await storage.getAllBeerTypes();
+      console.log(`Successfully fetched ${beerTypes.length} beer types`);
       res.json(beerTypes);
     } catch (error) {
       console.error("Error fetching beer types:", error);
-      res.status(500).json({ message: "Failed to fetch beer types" });
+      console.error("Error details:", {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : 'No stack trace'
+      });
+      res.status(500).json({ 
+        message: "Failed to fetch beer types", 
+        error: error instanceof Error ? error.message : 'Database connection error'
+      });
     }
   });
 
