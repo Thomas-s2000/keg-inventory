@@ -24,12 +24,14 @@ echo Configuration pour acces reseau local...
 echo.
 
 echo Recherche de votre adresse IP...
-for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /i "IPv4"') do (
+for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /i "IPv4" ^| findstr /v "127.0.0.1"') do (
     for /f "tokens=1" %%b in ("%%a") do (
         echo Adresse IP trouvee: %%b
         set LOCAL_IP=%%b
+        goto :found_ip
     )
 )
+:found_ip
 
 echo.
 echo ========================================
@@ -52,7 +54,14 @@ echo.
 
 set NODE_ENV=development
 set NETWORK_ACCESS=true
+echo Demarrage du serveur avec acces reseau...
 npx tsx server/index.ts
+if errorlevel 1 (
+    echo.
+    echo ERREUR: Le serveur a rencontre un probleme
+    echo Verifiez que PostgreSQL est demarre
+    echo.
+)
 
 echo.
 echo Serveur arrete.
